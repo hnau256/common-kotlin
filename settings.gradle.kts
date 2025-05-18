@@ -1,1 +1,1 @@
-rootProject.name = 'libs-kotlin'
+rootProject.name = "libs-kotlin"
