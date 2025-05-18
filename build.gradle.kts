@@ -5,9 +5,6 @@ plugins {
     id("maven-publish")
 }
 
-group = "hnau.common.kotlin"
-version = "1.0.4"
-
 repositories {
     mavenCentral()
 }
