@@ -5,8 +5,6 @@ plugins {
     id("maven-publish")
 }
 
-group = "com.github.hnau256"
-
 repositories {
     mavenCentral()
 }
@@ -21,6 +19,15 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
             }
+        }
+    }
+}
+
+publishing {
+    publications {
+        withType<MavenPublication>().configureEach {
+            groupId = "com.github.hnau256"
+            artifactId = project.name
         }
     }
 }
