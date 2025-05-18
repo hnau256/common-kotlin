@@ -23,6 +23,10 @@ kotlin {
     }
 }
 
+tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar") {
+    from("src/commonMain/kotlin")
+}
+
 publishing {
     publications {
         withType<MavenPublication>().configureEach {
