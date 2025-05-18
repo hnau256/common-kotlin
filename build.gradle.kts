@@ -5,6 +5,8 @@ plugins {
     id("maven-publish")
 }
 
+group = "com.github.hnau256"
+
 repositories {
     mavenCentral()
 }
