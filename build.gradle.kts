@@ -28,6 +28,11 @@ publishing {
         withType<MavenPublication>().configureEach {
             groupId = "com.github.hnau256"
             artifactId = project.name
+
+            artifact(tasks.register<Jar>("sourcesJar") {
+                archiveClassifier.set("sources")
+                from(kotlin.sourceSets["commonMain"].kotlin)
+            })
         }
     }
 }
