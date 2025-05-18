@@ -2,6 +2,7 @@ plugins {
     val kotlinVersion = "2.1.20"
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
+    id("maven-publish")
 }
 
 group = "hnau.common.kotlin"
