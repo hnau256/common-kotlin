@@ -1,37 +1,38 @@
 plugins {
     val kotlinVersion = "2.1.20"
-    kotlin("multiplatform") version kotlinVersion
+    kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("maven-publish")
 }
+
+group = "com.github.hnau256"
+version = "1.0.11"
 
 repositories {
     mavenCentral()
 }
 
-kotlin {
-    jvm()
-
-    sourceSets {
-        commonMain {
-            dependencies {
-                implementation("io.arrow-kt:arrow-core:1.2.4")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-            }
-        }
-    }
+dependencies {
+    implementation("io.arrow-kt:arrow-core:1.2.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
 }
 
-tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar") {
-    from("src/commonMain/kotlin")
+tasks {
+    create<Jar>("sourcesJar") {
+        archiveClassifier.set("sources")
+        from(sourceSets.main.get().allSource)
+    }
 }
 
 publishing {
     publications {
-        withType<MavenPublication>().configureEach {
-            groupId = "com.github.hnau256"
+        create<MavenPublication>("maven") {
+            groupId = project.group as String
             artifactId = project.name
+            version = project.version as String
+            from(components["java"])
+            artifact(tasks["sourcesJar"])
         }
     }
 }
