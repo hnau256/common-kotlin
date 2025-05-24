@@ -1,10 +1,13 @@
 package hnau.common.kotlin.mapper
 
-import java.util.Base64
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+
+@OptIn(ExperimentalEncodingApi::class)
 private val stringAsBase64ByteArrayMapper = Mapper<String, ByteArray>(
-    direct = { str -> Base64.getDecoder().decode(str) },
-    reverse = { bytes -> Base64.getEncoder().encodeToString(bytes) }
+    direct = { str -> Base64.decode(str) },
+    reverse = { bytes -> Base64.encode(bytes) }
 )
 
 val Mapper.Companion.stringAsBase64ByteArray: Mapper<String, ByteArray>

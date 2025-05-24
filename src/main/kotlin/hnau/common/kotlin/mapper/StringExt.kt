@@ -3,14 +3,12 @@ package hnau.common.kotlin.mapper
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
-import java.nio.charset.Charset
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-fun Mapper.Companion.bytesToString(
-    charset: Charset = Charsets.UTF_8,
-) = Mapper<ByteArray, String>(
-    reverse = { it.toByteArray(charset) },
-    direct = { it.toString(charset) },
+fun Mapper.Companion.bytesToString() = Mapper<ByteArray, String>(
+    reverse = { it.toByteArray() },
+    direct = { it.toString() },
 )
 
 private val bytesToStringInner = Mapper.bytesToString()
@@ -37,8 +35,11 @@ val Mapper.Companion.stringToDouble get() = stringToDoubleInner
 private val stringToBooleanInner = Mapper(String::toBoolean, Boolean::toString)
 val Mapper.Companion.stringToBoolean get() = stringToBooleanInner
 
-private val stringToUUIDInner = Mapper(UUID::fromString, UUID::toString)
-val Mapper.Companion.stringToUUID get() = stringToUUIDInner
+@OptIn(ExperimentalUuidApi::class)
+private val stringToUuidInner = Mapper(Uuid.Companion::parse, Uuid::toString)
+
+@OptIn(ExperimentalUuidApi::class)
+val Mapper.Companion.stringToUuid get() = stringToUuidInner
 
 private const val stringToOptionNonePrefix = '0'
 private const val stringToOptionSomePrefix = '1'

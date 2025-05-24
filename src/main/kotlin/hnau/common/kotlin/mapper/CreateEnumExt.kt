@@ -4,7 +4,7 @@ inline fun <T, reified E : Enum<E>> Mapper.Companion.toEnum(
     crossinline extractValue: E.() -> T,
     noinline handleNotFoundItem: ((T) -> E)? = null,
 ): Mapper<T, E> {
-    val classOfE = E::class.java
+    val classOfE = E::class
     val byValue = enumValues<E>().associateBy(extractValue)
     return Mapper(
         direct = { value ->
