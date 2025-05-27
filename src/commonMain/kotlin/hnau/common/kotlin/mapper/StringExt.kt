@@ -6,9 +6,9 @@ import arrow.core.Some
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-fun Mapper.Companion.bytesToString() = Mapper<ByteArray, String>(
-    reverse = { it.toByteArray() },
-    direct = { it.toString() },
+fun Mapper.Companion.bytesToString(): Mapper<ByteArray, String> = Mapper(
+    reverse = { it.encodeToByteArray() },
+    direct = { it.decodeToString() },
 )
 
 private val bytesToStringInner = Mapper.bytesToString()

@@ -22,7 +22,7 @@ internal fun <T> Iterator<T>.doubting(): DoubtingIterator<T> = object : Doubting
     override val current: Option<T>
         get() = resolveCurrent()
 
-    private fun resolveCurrent(): Option<T> = synchronized(this) {
+    private fun resolveCurrent(): Option<T> {
         var result = _current
         if (result == null) {
             result = when (source.hasNext()) {
@@ -31,7 +31,7 @@ internal fun <T> Iterator<T>.doubting(): DoubtingIterator<T> = object : Doubting
             }
             _current = result
         }
-        result
+        return result
     }
 
     override fun switchToNext() {
