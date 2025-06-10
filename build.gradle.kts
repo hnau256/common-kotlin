@@ -17,7 +17,7 @@ repositories {
 }
 
 group = "com.github.hnau256"
-version = "1.0.4"
+version = "1.0.5"
 
 android {
     namespace = "com.github.hnau256." + project.name.replace('-', '.')
