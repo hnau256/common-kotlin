@@ -17,7 +17,7 @@ repositories {
 }
 
 group = "com.github.hnau256"
-version = "1.0.2"
+version = "1.0.3"
 
 android {
     namespace = "com.github.hnau256." + project.name.replace('-', '.')
@@ -40,6 +40,8 @@ kotlin {
     jvm()
     linuxX64()
 
+    jvmToolchain(17)
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
@@ -54,13 +56,13 @@ kotlin {
                 implementation("io.arrow-kt:arrow-core:$arrow")
                 implementation("io.arrow-kt:arrow-core-serialization:$arrow")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
             }
         }
 
         androidMain {
             dependencies {
-                implementation("androidx.appcompat:appcompat:1.7.0")
+                implementation("androidx.appcompat:appcompat:1.7.1")
             }
         }
     }
