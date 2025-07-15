@@ -4,12 +4,28 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import hnau.common.kotlin.mapper.Mapper
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty
 
 data class MutableAccessor<T>(
     val get: () -> T,
     val set: (T) -> Unit,
-)
+) : ReadWriteProperty<Any?, T> {
+
+    override fun getValue(
+        thisRef: Any?,
+        property: KProperty<*>,
+    ): T = get()
+
+    override fun setValue(
+        thisRef: Any?,
+        property: KProperty<*>,
+        value: T,
+    ) {
+        set(value)
+    }
+}
 
 fun <T> KMutableProperty0<T>.toAccessor(): MutableAccessor<T> = MutableAccessor(
     get = ::get,

@@ -23,35 +23,35 @@ inline fun <T, reified E : Enum<E>> Mapper.Companion.toEnum(
 inline fun <T, reified E : Enum<E>> Mapper.Companion.toEnum(
     default: E,
     crossinline extractValue: E.() -> T,
-) = toEnum(
+): Mapper<T, E> = toEnum(
     handleNotFoundItem = { default },
     extractValue = extractValue,
 )
 
 inline fun <reified E : Enum<E>> Mapper.Companion.nameToEnum(
     noinline handleNotFoundItem: ((String) -> E)? = null,
-) = toEnum(
+): Mapper<String, E> = toEnum(
     handleNotFoundItem = handleNotFoundItem,
     extractValue = Enum<E>::name,
 )
 
 inline fun <reified E : Enum<E>> Mapper.Companion.nameToEnum(
     default: E,
-) = toEnum(
+): Mapper<String, E> = toEnum(
     default = default,
     extractValue = Enum<E>::name,
 )
 
 inline fun <reified E : Enum<E>> Mapper.Companion.ordinalToEnum(
     noinline handleNotFoundItem: ((Int) -> E)? = null,
-) = toEnum(
+): Mapper<Int, E> = toEnum(
     handleNotFoundItem = handleNotFoundItem,
     extractValue = Enum<E>::ordinal,
 )
 
 inline fun <reified E : Enum<E>> Mapper.Companion.ordinalToEnum(
     default: E,
-) = toEnum(
+): Mapper<Int, E> = toEnum(
     default = default,
     extractValue = Enum<E>::ordinal,
 )
