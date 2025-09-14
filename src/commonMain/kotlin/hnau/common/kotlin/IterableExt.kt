@@ -1,5 +1,9 @@
 package hnau.common.kotlin
 
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
+
 inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
     var sum = 0f
     for (element in this) {
@@ -7,3 +11,26 @@ inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
     }
     return sum
 }
+
+inline fun <T> Iterable<T>.exclude(
+    predicate: (T) -> Boolean,
+): Pair<List<T>, T>? = this
+    .fold<_, Pair<List<T>, Option<T>>>(
+        initial = emptyList<T>() to None
+    ) { (acc, excludedOrNone), item ->
+        excludedOrNone.fold(
+            ifSome = { (acc + item) to excludedOrNone },
+            ifEmpty = {
+                predicate(item).foldBoolean(
+                    ifTrue = { acc to Some(item) },
+                    ifFalse = { (acc + item) to None },
+                )
+            },
+        )
+    }
+    .let { (remaining, excludedOrNone) ->
+        excludedOrNone.fold(
+            ifEmpty = { null },
+            ifSome = { excluded -> remaining to excluded },
+        )
+    }

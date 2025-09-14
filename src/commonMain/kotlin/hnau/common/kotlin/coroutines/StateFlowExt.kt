@@ -21,7 +21,18 @@ inline fun <I, O> StateFlow<I>.mapWithScope(
     crossinline transform: (CoroutineScope, I) -> O,
 ): StateFlow<O> = this
     .scopedInState(scope)
-    .mapState(scope) { (scope, value) -> transform(scope, value) }
+    .mapState(scope) { (scope, value) ->
+        transform(scope, value)
+    }
+
+fun <I, O> StateFlow<I>.flatMapWithScope(
+    scope: CoroutineScope,
+    transform: (CoroutineScope, I) -> StateFlow<O>,
+): StateFlow<O> = this
+    .scopedInState(scope)
+    .flatMapState(scope) { (scope, value) ->
+        transform(scope, value)
+    }
 
 fun <I, O> StateFlow<I>.mapState(
     scope: CoroutineScope,
