@@ -3,6 +3,9 @@ package hnau.common.kotlin.coroutines
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
+import arrow.core.identity
+import arrow.core.toOption
+import hnau.common.kotlin.foldNullable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,8 +95,33 @@ inline fun <I, M, R> Stickable.Companion.stateFlow(
     )
 }
 
+inline fun <I, O> Stickable.Companion.stateFlow(
+    initial: O,
+    crossinline tryUseNext: (I) -> Option<O>,
+): Stickable<I, StateFlow<O>> = stateFlow(
+    initial = initial,
+    tryUseNext = tryUseNext,
+    createResult = ::identity,
+)
+
+fun <T : Any> Stickable.Companion.stateFlowOfNotNull(
+    initial: T,
+): Stickable<T?, StateFlow<T>> = stateFlow(
+    initial = initial,
+    tryUseNext = { next -> next.toOption() },
+)
+
 @PublishedApi
 internal data class ScopedStickable<in I, out R, S : Stickable<I, R>>(
     val cancel: () -> Unit,
     val stickable: S,
 )
+
+fun <T : Any> StateFlow<T?>.stickNotNull(
+    scope: CoroutineScope,
+): StateFlow<StateFlow<T>?> = stick(scope) { scope, initialOrNull ->
+    initialOrNull.foldNullable(
+        ifNull = { Stickable.nullable },
+        ifNotNull = { value -> Stickable.stateFlowOfNotNull(value) },
+    )
+}

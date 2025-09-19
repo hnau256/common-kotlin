@@ -17,7 +17,7 @@ repositories {
 }
 
 group = "com.github.hnau256.common-kotlin"
-version = "1.2.0"
+version = "1.3.0"
 
 android {
     namespace = "com.github.hnau256." + project.name.replace('-', '.')

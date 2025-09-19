@@ -3,6 +3,7 @@ package hnau.common.kotlin
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
+import arrow.core.identity
 import hnau.common.kotlin.mapper.Mapper
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
@@ -43,6 +44,15 @@ fun <I, O> MutableAccessor<I>.map(
         val transformedValue = mapper.reverse(valueToSet)
         set(transformedValue)
     }
+)
+
+inline fun <T> MutableAccessor<T?>.filter(
+    crossinline predicate: (T) -> Boolean,
+): MutableAccessor<T?> = map(
+    mapper = Mapper(
+        direct = { it?.takeIf(predicate) },
+        reverse = ::identity
+    )
 )
 
 inline fun <T, reified R : T> MutableAccessor<T?>.shrinkType(): MutableAccessor<R?> =

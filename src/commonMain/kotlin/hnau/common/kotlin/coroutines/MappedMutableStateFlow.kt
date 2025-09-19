@@ -7,28 +7,58 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class MappedMutableStateFlow<I, O>(
+fun <I, O> MutableStateFlow<I>.mapMutableState(
+    scope: CoroutineScope,
+    transform: (I) -> O,
+    compareAndSet: MutableStateFlow<I>.(expect: O, update: O) -> Boolean,
+    set: MutableStateFlow<I>.(O) -> Unit,
+): MutableStateFlow<O> = MappedMutableStateFlow(
+    scope = scope,
+    source = this,
+    transform = transform,
+    compareAndSet = compareAndSet,
+    set = set,
+)
+
+fun <I, O> MutableStateFlow<I>.mapMutableState(
+    scope: CoroutineScope,
+    mapper: Mapper<I, O>,
+): MutableStateFlow<O> = mapMutableState(
+    scope = scope,
+    transform = mapper.direct,
+    compareAndSet = { expect, update ->
+        compareAndSet(
+            expect = mapper.reverse(expect),
+            update = mapper.reverse(update),
+        )
+    },
+    set = { value = mapper.reverse(it) },
+)
+
+private class MappedMutableStateFlow<I, O>(
     scope: CoroutineScope,
     private val source: MutableStateFlow<I>,
-    private val mapper: Mapper<I, O>,
+    private val transform: (I) -> O,
+    private val compareAndSet: MutableStateFlow<I>.(expect: O, update: O) -> Boolean,
+    private val set: MutableStateFlow<I>.(O) -> Unit,
 ) : MutableStateFlow<O> {
 
     private val immutable: StateFlow<O> = source.mapState(
         scope = scope,
-        transform = mapper.direct,
+        transform = transform,
     )
     override var value: O
         get() = immutable.value
         set(value) {
-            source.value = mapper.reverse(value)
+            source.set(value)
         }
 
     override fun compareAndSet(
         expect: O,
         update: O,
     ): Boolean = source.compareAndSet(
-        expect = mapper.reverse(expect),
-        update = mapper.reverse(update),
+        expect,
+        update,
     )
 
     override val subscriptionCount: StateFlow<Int>
@@ -37,14 +67,15 @@ class MappedMutableStateFlow<I, O>(
     override suspend fun emit(
         value: O,
     ) {
-        source.emit(mapper.reverse(value))
+        source.set(value)
     }
 
     override fun tryEmit(
         value: O,
-    ): Boolean = source.tryEmit(
-        mapper.reverse(value)
-    )
+    ): Boolean {
+        source.set(value)
+        return true
+    }
 
     @ExperimentalCoroutinesApi
     override fun resetReplayCache() {
@@ -60,12 +91,3 @@ class MappedMutableStateFlow<I, O>(
         collector = collector,
     )
 }
-
-fun <I, O> MutableStateFlow<I>.mapMutableState(
-    scope: CoroutineScope,
-    mapper: Mapper<I, O>,
-): MutableStateFlow<O> = MappedMutableStateFlow(
-    scope = scope,
-    source = this,
-    mapper = mapper,
-)
