@@ -5,14 +5,18 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.serialization.Serializable
 
+@Serializable
 sealed class Loadable<out T> {
 
     companion object
 }
 
+@Serializable
 data object Loading : Loadable<Nothing>()
 
+@Serializable
 data class Ready<out T>(val value: T) : Loadable<T>()
 
 inline fun <I, O> Loadable<I>.fold(
