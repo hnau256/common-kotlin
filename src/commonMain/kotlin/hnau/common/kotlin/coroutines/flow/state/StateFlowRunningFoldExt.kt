@@ -1,4 +1,4 @@
-package hnau.common.kotlin.coroutines
+package hnau.common.kotlin.coroutines.flow.state
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,8 @@ fun <I, O> StateFlow<I>.runningFoldState(
             result.value = new
         }
     }
-    return result.mapStateLite { it.second }
+    @Suppress("DEPRECATION")
+    return result.mapStateLite(Pair<*, O>::second)
 }
 
 fun <T> StateFlow<T>.runningFoldState(

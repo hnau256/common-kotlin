@@ -6,7 +6,7 @@ import hnau.common.kotlin.splitEscaped
 fun Mapper.Companion.stringToStringsBySeparator(
     separator: Char,
     escape: Char = '\\',
-): Mapper<String, List<String>> = Mapper<String, List<String>>(
+): Mapper<String, List<String>> = Mapper(
     direct = { string ->
         string
             .splitEscaped(separator, escape)

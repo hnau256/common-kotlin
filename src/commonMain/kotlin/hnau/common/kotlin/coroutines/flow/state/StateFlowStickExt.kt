@@ -1,19 +1,20 @@
-package hnau.common.kotlin.coroutines
+package hnau.common.kotlin.coroutines.flow.state
 
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.identity
 import arrow.core.toOption
+import hnau.common.kotlin.coroutines.createChild
 import hnau.common.kotlin.foldNullable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-inline fun <I, R, S : Stickable<I, R>> StateFlow<I>.stick(
+fun <I, R, S : Stickable<I, R>> StateFlow<I>.stick(
     scope: CoroutineScope,
-    crossinline createStickable: (
+    createStickable: (
         stickableScope: CoroutineScope,
         initialValue: I,
     ) -> S,
@@ -26,6 +27,7 @@ inline fun <I, R, S : Stickable<I, R>> StateFlow<I>.stick(
         )
     }
 
+    @Suppress("DEPRECATION")
     return this
         .runningFoldState(
             scope = scope,
@@ -50,8 +52,8 @@ interface Stickable<in I, out R> {
     companion object
 }
 
-inline fun <I, R> Stickable(
-    crossinline tryUpdateValue: (newValue: I) -> Boolean,
+fun <I, R> Stickable(
+    tryUpdateValue: (newValue: I) -> Boolean,
     result: R,
 ): Stickable<I, R> = object : Stickable<I, R> {
 
@@ -62,7 +64,7 @@ inline fun <I, R> Stickable(
     override val result: R get() = result
 }
 
-fun <R> Stickable.Companion.predeterminated(
+fun <R> Stickable.Companion.predetermined(
     result: R,
 ): Stickable<Any?, R> = Stickable(
     tryUpdateValue = { false },
@@ -70,14 +72,14 @@ fun <R> Stickable.Companion.predeterminated(
 )
 
 private val nullableStickable: Stickable<Any?, Nothing?> =
-    Stickable.predeterminated(null)
+    Stickable.predetermined(null)
 
 val Stickable.Companion.nullable: Stickable<Any?, Nothing?>
     get() = nullableStickable
 
-inline fun <I, M, R> Stickable.Companion.stateFlow(
+fun <I, M, R> Stickable.Companion.stateFlow(
     initial: M,
-    crossinline tryUseNext: (I) -> Option<M>,
+    tryUseNext: (I) -> Option<M>,
     createResult: (value: StateFlow<M>) -> R,
 ): Stickable<I, R> {
     val value: MutableStateFlow<M> = MutableStateFlow(initial)
@@ -95,9 +97,9 @@ inline fun <I, M, R> Stickable.Companion.stateFlow(
     )
 }
 
-inline fun <I, O> Stickable.Companion.stateFlow(
+fun <I, O> Stickable.Companion.stateFlow(
     initial: O,
-    crossinline tryUseNext: (I) -> Option<O>,
+    tryUseNext: (I) -> Option<O>,
 ): Stickable<I, StateFlow<O>> = stateFlow(
     initial = initial,
     tryUseNext = tryUseNext,
@@ -119,7 +121,7 @@ internal data class ScopedStickable<in I, out R, S : Stickable<I, R>>(
 
 fun <T : Any> StateFlow<T?>.stickNotNull(
     scope: CoroutineScope,
-): StateFlow<StateFlow<T>?> = stick(scope) { scope, initialOrNull ->
+): StateFlow<StateFlow<T>?> = stick(scope) { _, initialOrNull ->
     initialOrNull.foldNullable(
         ifNull = { Stickable.nullable },
         ifNotNull = { value -> Stickable.stateFlowOfNotNull(value) },

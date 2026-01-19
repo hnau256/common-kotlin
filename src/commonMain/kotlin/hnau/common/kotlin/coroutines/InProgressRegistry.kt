@@ -1,14 +1,19 @@
 package hnau.common.kotlin.coroutines
 
+import hnau.common.kotlin.coroutines.flow.state.mapState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class InProgressRegistry {
+class InProgressRegistry(
+    scope: CoroutineScope,
+) {
 
-    private val activitiesCount = MutableStateFlow(0)
+    private val activitiesCount: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    val inProgress = activitiesCount
-        .mapStateLite { activitiesCount -> activitiesCount > 0 }
+    val inProgress: StateFlow<Boolean> = activitiesCount
+        .mapState(scope) { activitiesCount -> activitiesCount > 0 }
 
     @PublishedApi
     internal fun incActivitiesCount(delta: Int) {

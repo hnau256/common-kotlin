@@ -10,6 +10,6 @@ import kotlin.coroutines.EmptyCoroutineContext
 inline fun CoroutineScope.createChild(
     additionalContext: CoroutineContext = EmptyCoroutineContext,
     createChildJob: (parentJob: Job) -> Job = ::SupervisorJob,
-) = CoroutineScope(
+): CoroutineScope = CoroutineScope(
     context = coroutineContext + additionalContext + createChildJob(coroutineContext.job),
 )

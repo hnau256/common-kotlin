@@ -1,5 +1,6 @@
 package hnau.common.kotlin.coroutines
 
+import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.foldNullable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel

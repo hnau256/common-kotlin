@@ -5,6 +5,7 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.toNonEmptyListOrThrow
+import kotlin.jvm.JvmName
 
 inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
     var sum = 0f
@@ -37,10 +38,21 @@ inline fun <T> Iterable<T>.exclude(
         )
     }
 
+inline fun <I, K> Iterable<I>.groupByToNonEmpty(
+    keySelector: (I) -> K,
+): Map<K, NonEmptyList<I>> = this
+    .groupBy(keySelector)
+    .mapValues { (_, items) ->
+        items.toNonEmptyListOrThrow()
+    }
+
+@JvmName("groupBySplitToNonEmpty")
 inline fun <I, K, O> Iterable<I>.groupByToNonEmpty(
     split: (I) -> KeyValue<K, O>,
 ): Map<K, NonEmptyList<O>> = map(split)
-    .groupBy(KeyValue<K, *>::key)
+    .groupByToNonEmpty(
+        keySelector = KeyValue<K, *>::key,
+    )
     .mapValues { (_, items) ->
         items
             .map(KeyValue<*, O>::value)
