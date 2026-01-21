@@ -47,6 +47,17 @@ fun <I1, I2, R> combineState(
     return result
 }
 
+fun <I, O, R> StateFlow<I>.combineStateWith(
+    scope: CoroutineScope,
+    other: StateFlow<O>,
+    combine: (I, O) -> R,
+): StateFlow<R> = combineState(
+    scope = scope,
+    first = this,
+    second = other,
+    combine = combine,
+)
+
 @Suppress("DEPRECATION")
 @Deprecated("Result of this function is fake StateFlow. Combine will be called for all collectors")
 fun <I1, I2, R> combineStateLite(
