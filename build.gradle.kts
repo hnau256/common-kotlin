@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    val kotlinVersion = "2.2.0"
+    val kotlinVersion = "2.3.0"
     kotlin("multiplatform") version kotlinVersion
-    id("com.android.library") version "8.13.1"
+    id("com.android.library") version "8.13.2"
     id("maven-publish")
     kotlin("plugin.serialization") version kotlinVersion
     id("org.jetbrains.kotlinx.atomicfu") version "0.29.0"
@@ -18,7 +18,7 @@ repositories {
 }
 
 group = "com.github.hnau256.common-kotlin"
-version = "1.6.0"
+version = "1.7.0"
 
 android {
     namespace = "com.github.hnau256." + project.name.replace('-', '.')
@@ -53,7 +53,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                val arrow = "2.2.0"
+                val arrow = "2.2.1.1"
                 implementation("io.arrow-kt:arrow-core:$arrow")
                 implementation("io.arrow-kt:arrow-core-serialization:$arrow")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
