@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,9 +15,11 @@ sealed class Loadable<out T> {
 }
 
 @Serializable
+@SerialName("loading")
 data object Loading : Loadable<Nothing>()
 
 @Serializable
+@SerialName("ready")
 data class Ready<out T>(val value: T) : Loadable<T>()
 
 inline fun <I, O> Loadable<I>.fold(
