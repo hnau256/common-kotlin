@@ -3,10 +3,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     val kotlinVersion = "2.3.0"
     kotlin("multiplatform") version kotlinVersion
-    id("com.android.library") version "8.13.2"
+    id("com.android.kotlin.multiplatform.library") version "8.13.2"
     id("maven-publish")
     kotlin("plugin.serialization") version kotlinVersion
-    id("org.jetbrains.kotlinx.atomicfu") version "0.29.0"
 }
 
 repositories {
@@ -20,34 +19,19 @@ repositories {
 group = "com.github.hnau256.common-kotlin"
 version = "1.10.0"
 
-android {
-    namespace = "com.github.hnau256." + project.name.replace('-', '.')
-    compileSdk = 36
-    defaultConfig {
-        minSdk = 21
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-}
-
 kotlin {
     jvm()
     linuxX64()
 
     jvmToolchain(17)
 
-    androidTarget {
+    androidLibrary {
+        namespace = "com.github.hnau256." + project.name.replace('-', '.')
+        compileSdk = 36
+        minSdk = 21
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
-        publishLibraryVariants("release")
     }
 
     sourceSets {
@@ -59,6 +43,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.29.0")
             }
         }
 
